@@ -1,7 +1,5 @@
 #game {
     border: 10px solid black;
-    width: 600px;
-    height: 350px;
     position: absolute;
     /* Align the Game in the center now */
     top: 0;
