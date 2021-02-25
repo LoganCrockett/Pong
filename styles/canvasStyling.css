@@ -7,4 +7,27 @@
     bottom: 0;
     right: 0;
     margin: auto;
+    background-color: azure;
+}
+
+div.scoreboard {
+    text-align: center;
+    background-color: aquamarine;
+    max-width: 20vw;
+    max-height: 20vh;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+div > p {
+    background-color: aqua;
+    margin-left: 10px;
+}
+
+p {
+    display: inline-block;
+    font-size: 300%;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    padding: 10px;
+    margin-top: 2rem;
 }
