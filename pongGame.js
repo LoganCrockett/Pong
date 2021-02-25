@@ -29,8 +29,8 @@ var puck = {
     end: 360,
 
     // For velocity of the puck
-    xVelocity: 0,
-    yVelocity: -2,
+    xVelocity: -2,
+    yVelocity: .2,
 }
 
 function init() {
@@ -107,6 +107,39 @@ function drawPuck(x, y, r, start, end) {
     return;
 }
 
+function checkAndHandlePlayerCollison() {
+    // Player 1
+
+    /**
+     * In essence, check if:
+     * 1: The Puck x value (minus radius) is less than the player x value (plus the player width)
+     * 2: The Puck y value is between the y & y+height values of the player
+     */
+
+    // Check for the x portion & see if it lines up
+    if (puck.x - puck.r < player1.x + player1.width
+        // Check if the y portions match up
+        && puck.y > player1.y && puck.y < player1.y + player1.height) {
+            // If so, we have a collision, and need to change the velocity
+        puck.xVelocity *= -1; // Should Flip the sign of the velocity
+        puck.yVelocity *= -1;
+    }
+
+    // Player 2
+
+    /**
+     * In essence,check if
+     * 1: the puck x value ( plus the radius) is greater than player x value
+     * 2: the puck y value is bewteen y & y+height values of the player
+     */
+
+    if (puck.x + puck.r > player2.x
+        && puck.y > player2.y && puck.y < player2.y + player2.height) {
+            puck.xVelocity *= -1; // Should flip the sign of the velocity
+            puck.yVelocity *= -1;
+        }
+}
+
 /*
  * This will be the function we call to run our game of pong
  */
@@ -149,6 +182,7 @@ function gameLoop() {
     // Update puck x & y based on its velocity values before drawing
 
     // If we bounce off the top wall, change the direction
+    // Account for the radius of the puck in this calculation
     if (puck.y - puck.r < 0) {
         puck.yVelocity = 2;
     }
@@ -157,6 +191,9 @@ function gameLoop() {
     if (puck.y > canvas.height - puck.r) {
         puck.yVelocity = -2;
     }
+
+    // Check for collision with players
+    checkAndHandlePlayerCollison()
 
     puck.x += puck.xVelocity;
     puck.y += puck.yVelocity;
