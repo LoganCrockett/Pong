@@ -6,6 +6,10 @@ let canvas, ctx;
 // Values in the gameLoop, and update our pieces accordingly
 let keysPressed = {};
 
+// Flags to end the game
+let player1Win = false;
+let player2Win = false;
+
 // These three variables will keep track of each objects postion
 var player1 = {
     x: 10,
@@ -140,6 +144,17 @@ function checkAndHandlePlayerCollison() {
         }
 }
 
+function checkForWinner() {
+    // If it hits the left wall, player 2 wins
+    if (puck.x < 0) {
+        player2Win = true;
+    }
+    // If it hits the right wall, player 1 wins
+    if (puck.x > canvas.width) {
+        player1Win = true;
+    }
+}
+
 /*
  * This will be the function we call to run our game of pong
  */
@@ -200,7 +215,24 @@ function gameLoop() {
 
     drawPuck(puck.x, puck.y, puck.r, puck.start, puck.end)
 
-    //Request another animation frame
-    window.requestAnimationFrame(gameLoop)
+    // Now that we have finsihed drawing, check for a winner
+    checkForWinner();
+
+    // While neither player has won
+    if (!player1Win && !player2Win) {
+        //Request another animation frame
+        window.requestAnimationFrame(gameLoop)
+    }
+    else {
+        // Otherwise, we can cancel the animation frame, and display a winner
+        window.cancelAnimationFrame(gameLoop)
+
+        if (player1Win) {
+            window.alert("Player 1 Wins")
+        }
+        else {
+            window.alert("Player 2 Wins")
+        }
+    }
 
 }
