@@ -162,12 +162,15 @@ function checkAndHandlePlayerCollison() {
 
     /**
      * In essence, check if:
-     * 1: The Puck x value (minus radius) is less than the player x value (plus the player width)
-     * 2: The Puck y value (+- radius) is between the y & y+height values of the player
+     * 1: If the velocity is negative. If not, then we bounced off the paddle, and can forgo checking
+     * By doing so, we fix an issue where the paddle can run into the puck in y direction and it stays
+     * rather than bouncing
+     * 2: The Puck x value (minus radius) is less than the player x value (plus the player width)
+     * 3: The Puck y value (+- radius) is between the y & y+height values of the player
      */
 
     // Check for the x portion & see if it lines up
-    if (puck.x - puck.r < player1.x + player1.width
+    if (puck.xVelocity < 0 && puck.x - puck.r < player1.x + player1.width
         // Check if the y portions match up
         && puck.y + puck.r > player1.y && puck.y - puck.r < player1.y + player1.height) {
             // If so, we have a collision, and need to change the velocity
@@ -179,11 +182,14 @@ function checkAndHandlePlayerCollison() {
 
     /**
      * In essence,check if
-     * 1: the puck x value ( plus the radius) is greater than player x value
-     * 2: the puck y value (+- radius) is bewteen y & y+height values of the player
+     * 1: If the velocity is positive. If not, then we bounced off the paddle, and can forgo checking
+     * By doing so, we fix an issue where the paddle can run into the puck in y direction and it stays
+     * rather than bouncing
+     * 2: the puck x value ( plus the radius) is greater than player x value
+     * 3: the puck y value (+- radius) is bewteen y & y+height values of the player
      */
 
-    if (puck.x + puck.r > player2.x
+    if (puck.xVelocity > 0 && puck.x + puck.r > player2.x
         && puck.y + puck.r > player2.y && puck.y - puck.r < player2.y + player2.height) {
             puck.xVelocity *= -1; // Should flip the sign of the velocity
             puck.yVelocity *= -1;
