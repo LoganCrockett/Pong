@@ -174,8 +174,34 @@ function checkAndHandlePlayerCollison() {
         // Check if the y portions match up
         && puck.y + puck.r > player1.y && puck.y - puck.r < player1.y + player1.height) {
             // If so, we have a collision, and need to change the velocity
-        puck.xVelocity *= -1; // Should Flip the sign of the velocity
-        puck.yVelocity *= -1;
+
+            // Split the paddle into three sections. This is the height for those three sections
+            const player1PaddleSection = player1.height / 3;
+            // Check if the puck hits in the middle section. of the paddle
+            if (puck.y > player1.y + player1PaddleSection && puck.y < player1.y + 2 * player1PaddleSection) {
+                // If so, we can change the velocity to a smaller number
+                puck.xVelocity = 2;
+                // If the yVelocity is negative, we need to retain it being negative
+                if (puck.yVelocity < 0) {
+                    puck.yVelocity = -2;
+                }
+                else {
+                    // Otherwise, use a positive yVeloctiy
+                    puck.yVelocity = 2;
+                }
+            }
+            // Otherwise, we can simulate it hitting closer the edge by giving it a faster velocity
+            else {
+                puck.xVelocity = 2.75;
+                // If the yVelocity is negative, we need to retain it being negative
+                if (puck.yVelocity < 0) {
+                    puck.yVelocity = -3;
+                }
+                else {
+                    // Otherwise, use a positive yVeloctiy
+                    puck.yVelocity = 3;
+                }
+            }
     }
 
     // Player 2
@@ -191,8 +217,33 @@ function checkAndHandlePlayerCollison() {
 
     if (puck.xVelocity > 0 && puck.x + puck.r > player2.x
         && puck.y + puck.r > player2.y && puck.y - puck.r < player2.y + player2.height) {
-            puck.xVelocity *= -1; // Should flip the sign of the velocity
-            puck.yVelocity *= -1;
+            // Split the paddle into three sections. This is the height for those three sections
+            const player2PaddleSection = player2.height / 3;
+            // Check if the puck hits in the middle section. of the paddle
+            if (puck.y > player2.y + player2PaddleSection && puck.y < player2.y + 2 * player2PaddleSection) {
+                // If so, we can change the velocity to a smaller number
+                puck.xVelocity = -2;
+                // If the yVelocity is negative, we need to retain it being negative
+                if (puck.yVelocity < 0) {
+                    puck.yVelocity = -2;
+                }
+                else {
+                    // Otherwise, use a positive yVeloctiy
+                    puck.yVelocity = 2;
+                }
+            }
+            // Otherwise, we can simulate it hitting closer the edge by giving it a faster velocity
+            else {
+                puck.xVelocity = -2.75;
+                // If the yVelocity is negative, we need to retain it being negative
+                if (puck.yVelocity < 0) {
+                    puck.yVelocity = -3;
+                }
+                else {
+                    // Otherwise, use a positive yVeloctiy
+                    puck.yVelocity = 3;
+                }
+            }
         }
 }
 
@@ -226,24 +277,24 @@ function gameLoop() {
     // We will Check if the key is pressed, and that we are not about to go out-of-bounds in each case
     if (keysPressed['w'] === true && player1.y > 0) {
         // Moving Upward
-        player1.y -= 2;
+        player1.y -= 2.5;
     }
 
     // have to account for the player height in this calculation
     if (keysPressed['s'] === true && player1.y < canvas.height - player1.height) {
         // Moving Downward
-        player1.y += 2;
+        player1.y += 2.5;
     }
 
     // Player 2 Controls
     if (keysPressed['k'] === true && player2.y > 0) {
         // Moving Upward
-        player2.y -= 2;
+        player2.y -= 2.5;
     }
 
     if (keysPressed['m'] === true && player2.y < canvas.height - player2.height) {
         // Moving Downward
-        player2.y += 2;
+        player2.y += 2.5;
     }
 
     // Step 3: Redraw our Player's in the new locations
@@ -253,22 +304,23 @@ function gameLoop() {
 
     // Step 4: Draw the Puck & update its location
 
-    // Update puck x & y based on its velocity values before drawing
+    // Check if we are colliding with the top or botton wall, and adjust accordingly
 
     // If we bounce off the top wall, change the direction
     // Account for the radius of the puck in this calculation
     if (puck.y - puck.r < 0) {
-        puck.yVelocity = 2;
+        puck.yVelocity *= -1;
     }
     // If we bounce off the bottom wall, change the direction
     // Account for the radius of the puck in this calculation
     if (puck.y > canvas.height - puck.r) {
-        puck.yVelocity = -2;
+        puck.yVelocity *= -1;
     }
 
     // Check for collision with players
     checkAndHandlePlayerCollison()
 
+    // Update puck x & y based on its velocity values before drawing
     puck.x += puck.xVelocity;
     puck.y += puck.yVelocity;
 
