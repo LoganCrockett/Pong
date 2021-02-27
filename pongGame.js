@@ -11,6 +11,13 @@ let keysPressed = {};
 // let player2Win = false;
 let won = false;
 
+/**
+ * This variable will be set when each player scores
+ * Essentially, If player 1 scores, then the puck will head towards player 2
+ * next, and vice versa
+ */
+let player1Start = false;
+
 // These three variables will keep track of each objects postion
 var player1 = {
     x: 10,
@@ -94,13 +101,26 @@ function initialize() {
     movePuckToStart();
     drawPuck(puck.x, puck.y, puck.r, puck.start, puck.end);
 
+    // Draw the Center Dividing Line
+    drawCenterLine();
+
     /**
      * Basically, when reseting the board, wait 1 second before giving the puck velocity
      * This will allow the players to continue moving once the puck scores
+     * 
+     * Give the puck a starting yVelocity of 0. It will change accordingly
+     * when it hits a paddle
      */
     setTimeout(() => {
-        puck.xVelocity = 2;
-        puck.yVelocity = 1.5;
+        // If player 1 should start, then give the puck the appropriate velocity
+        if (player1Start) {
+            puck.xVelocity = -2;
+            puck.yVelocity = 0;
+        }
+        else {
+            puck.xVelocity = 2;
+            puck.yVelocity = 0;
+        }
     }, 1000)
 
     // Reset our flag
@@ -137,6 +157,20 @@ function drawPuck(x, y, r, start, end) {
     return;
 }
 
+function drawCenterLine() {
+    // Update this value to move our rectangle
+    // Each time we draw one
+    let startingY = 0;
+
+    ctx.fillStyle = "green";
+
+    while (startingY < canvas.height) {
+        ctx.fillRect(canvas.width / 2 - 5, startingY, 10, 30);
+        startingY += 40;
+    }
+    return;
+}
+
 /**
  * This updates the positon of the puck back to where it started
  * It also sets its x & y velocity to 0
@@ -144,8 +178,10 @@ function drawPuck(x, y, r, start, end) {
  */
 function movePuckToStart() {
     puck = {
-        x: 300,
-        y: 175,
+        // x: 300,
+        x: canvas.width / 2,
+        // y: 175,
+        y: canvas.height / 2,
         r: 10,
         start: 0,
         end: 360,
@@ -247,10 +283,15 @@ function checkAndHandlePlayerCollison() {
         }
 }
 
+/**
+ * This checks to see if one of the players have won
+ * If so, it updates the score & sets the player1Start flag
+ */
 function checkForWinner() {
     // If it hits the left wall, player 2 wins
     if (puck.x < 0) {
         // player2Win = true;
+        player1Start = true; // Set our flag to allow player 1 to start
         won = true;
         player2.score += 1;
         document.getElementById("p2score").innerHTML = player2.score;
@@ -258,6 +299,7 @@ function checkForWinner() {
     // If it hits the right wall, player 1 wins
     if (puck.x > canvas.width) {
         // player1Win = true;
+        player1Start = false; // Set our flag to allow player 2 to start
         won = true;
         player1.score += 1;
         document.getElementById("p1score").innerHTML = player1.score;
@@ -268,8 +310,9 @@ function checkForWinner() {
  * This will be the function we call to run our game of pong
  */
 function gameLoop() {
-    // Step 1: Clear Our Canvas
+    // Step 1: Clear Our Canvas & re-draw center line
     ctx.clearRect(0,0,canvas.width, canvas.height);
+    drawCenterLine();
 
     // Step 2: Check for pressed keys, and update the player's accordingly
 
@@ -326,7 +369,7 @@ function gameLoop() {
 
     drawPuck(puck.x, puck.y, puck.r, puck.start, puck.end)
 
-    // Now that we have finsihed drawing, check for a winner
+    // Step 6: Now that we have finsihed drawing, check for a winner
     checkForWinner();
 
     // While neither player has won
