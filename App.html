@@ -16,7 +16,16 @@
             <p id="p1score">0</p>
             <p id="p2score">0</p>
         </div>
-        <!-- Declare our Canvas element here-->
-        <canvas id="game" width="600px" height="350px">Your browser does not support Canvas</canvas>
+
+        <div id="gameControls" name="gameControls">
+            <div id="gameModeMenu">
+                <table>
+                    <tr><td><button type="button" onclick="chooseGameMode('singlePlayer');">Single Player</button></td></tr>
+                    <tr><td><button type="button" onclick="chooseGameMode('twoPlayer');">Two Player</button></td></tr>
+                </table>
+            </div>
+            <!-- Declare our Canvas element here-->
+            <canvas id="game" width="600px" height="350px">Your browser does not support Canvas</canvas>
+        </div>
     </body>
 </html>

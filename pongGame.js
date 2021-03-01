@@ -18,6 +18,9 @@ let won = false;
  */
 let player1Start = false;
 
+// This tells us if we are playing single player or not
+let singlePlayerMode = true;
+
 // These three variables will keep track of each objects postion
 var player1 = {
     x: 10,
@@ -53,9 +56,35 @@ function init() {
     ctx = canvas.getContext("2d");
 
     // Start by drawing all of the players & the ball
-    ctx.save();
-    initialize();
-    ctx.restore();
+    // ctx.save();
+    // initialize();
+    // ctx.restore();
+
+    return;
+}
+
+/**
+ * This function will start the appropriate game loop from the Game Mode Selection Menu
+ * @param {string} mode game mode we are playing in
+ */
+function chooseGameMode(mode) {
+
+    // Choose our game mode now, and update singlePlayerMode flag
+    switch(mode) {
+        case 'singlePlayer':
+            singlePlayerMode = true;
+            break;
+        case 'twoPlayer':
+            singlePlayerMode = false;
+            break;
+        default:
+            // Just Return. it will not add any listners or change visibility
+            return;
+    }
+
+    // Hide Our Game Mode Menu; Show Canvas
+    document.getElementById("gameModeMenu").style = "display: none;";
+    canvas.style = "display: block;";
 
     // Add event listners
 
@@ -74,7 +103,19 @@ function init() {
         keysPressed[e.key] = false;
     })
 
+    // Initialize the board, and start the game
+    initialize();
+
     return;
+}
+
+/**
+ * This Shows the Game Mode Selection Menu, and hides the canvas
+ */
+function showGameModeMenu() {
+    // Show Our Game Mode Menu; Hide Canvas
+    document.getElementById("gameModeMenu").style = "display: block;";
+    canvas.style = "display: none;";
 }
 
 /*
@@ -94,15 +135,15 @@ function initialize() {
     // drawPlayer2(580, 10, 5, 60);
     drawPlayer2(player2.x, player2.y, player2.width, player2.height);
 
+    // Draw the Center Dividing Line
+    drawCenterLine();
+
     // Draw the Puck
     // drawPuck(300, 175, 10, 0, 360);
 
     // Move the puck to its starting position before drawing
     movePuckToStart();
     drawPuck(puck.x, puck.y, puck.r, puck.start, puck.end);
-
-    // Draw the Center Dividing Line
-    drawCenterLine();
 
     /**
      * Basically, when reseting the board, wait 1 second before giving the puck velocity
@@ -127,7 +168,15 @@ function initialize() {
     won = false;
 
     // Call our gameLoop to start the game
-    gameLoop();
+    // gameLoop();
+
+    // If in single player mode, use this game loop function
+    if (singlePlayerMode) {
+        window.alert("Start ME")
+    }
+    else {
+        twoPlayerGameLoop();
+    }
 
     return;
 }
@@ -309,7 +358,7 @@ function checkForWinner() {
 /*
  * This will be the function we call to run our game of pong
  */
-function gameLoop() {
+function twoPlayerGameLoop() {
     // Step 1: Clear Our Canvas & re-draw center line
     ctx.clearRect(0,0,canvas.width, canvas.height);
     drawCenterLine();
@@ -376,7 +425,7 @@ function gameLoop() {
     // if (!player1Win && !player2Win) {
     if (!won) {
         //Request another animation frame
-        window.requestAnimationFrame(gameLoop)
+        window.requestAnimationFrame(twoPlayerGameLoop)
     }
     else {
         // Otherwise, we can cancel the animation frame, and display a winner
@@ -385,11 +434,17 @@ function gameLoop() {
         // If one of the players has a score equal to 10, declare a winner
         if (player1.score === 10) {
             window.alert("Player 1 Wins!!")
-            window.cancelAnimationFrame(gameLoop)
+            window.cancelAnimationFrame(twoPlayerGameLoop)
+
+            // Return to our game mode menu
+            showGameModeMenu();
         }
         else if (player2.score === 10) {
             window.alert("Player 2 Wins!!")
-            window.cancelAnimationFrame(gameLoop)
+            window.cancelAnimationFrame(twoPlayerGameLoop)
+
+            // Return to our game mode menu
+            showGameModeMenu();
         }
         // Otherwise, reset the board, and play again
         else {
