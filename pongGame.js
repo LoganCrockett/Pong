@@ -311,12 +311,23 @@ function checkAndHandlePlayerCollison() {
 
             // Split the paddle into three sections. This is the height for those three sections
             const player1PaddleSection = player1.height / 3;
+
             // Check if the puck hits in the middle section. of the paddle
             if (puck.y > player1.y + player1PaddleSection && puck.y < player1.y + 2 * player1PaddleSection) {
+
                 // If so, we can change the velocity to a smaller number
                 puck.xVelocity = 2;
+
+                // If the yVelocity is 0, we can give it a random yvelocity number
+                if (puck.yVelocity === 0) {
+                    // Determine if we should randomly give it a negative or positive yvelocity
+                    const isNegative = Math.random() * 2 < 1 ? true : false;
+
+                    // Give it a random positive or negative yVelocity based on isNegative
+                    puck.yVelocity = isNegative ? Math.random() * -3 : Math.random() * 3;
+                }
                 // If the yVelocity is negative, we need to retain it being negative
-                if (puck.yVelocity < 0) {
+                else if (puck.yVelocity < 0) {
                     puck.yVelocity = -2;
                 }
                 else {
@@ -362,8 +373,17 @@ function checkAndHandlePlayerCollison() {
             if (puck.y > player2.y + player2PaddleSection && puck.y < player2.y + 2 * player2PaddleSection) {
                 // If so, we can change the velocity to a smaller number
                 puck.xVelocity = -2;
+
+                // If the yVelocity is 0, we can give it a random yvelocity number
+                if (puck.yVelocity === 0) {
+                    // Determine if we should randomly give it a negative or positive yvelocity
+                    const isNegative = Math.random() * 2 < 1 ? true : false;
+
+                    // Give it a random positive or negative yVelocity based on isNegative
+                    puck.yVelocity = isNegative ? Math.random() * -3 : Math.random() * 3;
+                }
                 // If the yVelocity is negative, we need to retain it being negative
-                if (puck.yVelocity < 0) {
+                else if (puck.yVelocity < 0) {
                     puck.yVelocity = -2;
                 }
                 else {
@@ -469,7 +489,13 @@ function onePlayerGameLoop() {
      */
 
     // Case 1: Puck is below paddle and we won't hit the bottom wall
-    if (puck.y - puck.r > player2.y + player2.height && player2.y < canvas.height - player2.height) {
+    // if (puck.y - puck.r > player2.y + player2.height && player2.y < canvas.height - player2.height) {
+    /*
+     * Forgo the puck.r subtraction in this if statement
+     * When it was included, it would sometimes not move to hit the puck,
+     * and let it slide under the paddle
+     */
+    if (puck.y > player2.y + player2.height && player2.y < canvas.height - player2.height) {
         player2.y += 2;
     }
 
