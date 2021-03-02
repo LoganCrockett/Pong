@@ -111,11 +111,20 @@ function chooseGameMode(mode) {
 
 /**
  * This Shows the Game Mode Selection Menu, and hides the canvas
+ * We can reset the scoreboard here, since we will be returning to our
+ * main game menu
  */
 function showGameModeMenu() {
     // Show Our Game Mode Menu; Hide Canvas
     document.getElementById("gameModeMenu").style = "display: block;";
     canvas.style = "display: none;";
+
+    // Reset the score to zero
+    player1.score = 0;
+    player2.score = 0;
+
+    // Update the scoreboard
+    updateScoreboard();
 }
 
 /*
@@ -172,7 +181,7 @@ function initialize() {
 
     // If in single player mode, use this game loop function
     if (singlePlayerMode) {
-        window.alert("Start ME")
+        onePlayerGameLoop();
     }
     else {
         twoPlayerGameLoop();
@@ -240,6 +249,15 @@ function movePuckToStart() {
         yVelocity: 0
     }
     return
+}
+
+/**
+ * This function will update the scoreboard to reflect the current score values when it is called
+ */
+function updateScoreboard() {
+    // Update the score of both players
+    document.getElementById("p2score").innerHTML = player2.score;
+    document.getElementById("p1score").innerHTML = player1.score;
 }
 
 function checkAndHandlePlayerCollison() {
@@ -343,7 +361,8 @@ function checkForWinner() {
         player1Start = true; // Set our flag to allow player 1 to start
         won = true;
         player2.score += 1;
-        document.getElementById("p2score").innerHTML = player2.score;
+        updateScoreboard();
+       // document.getElementById("p2score").innerHTML = player2.score;
     }
     // If it hits the right wall, player 1 wins
     if (puck.x > canvas.width) {
@@ -351,12 +370,119 @@ function checkForWinner() {
         player1Start = false; // Set our flag to allow player 2 to start
         won = true;
         player1.score += 1;
-        document.getElementById("p1score").innerHTML = player1.score;
+        updateScoreboard();
+        // document.getElementById("p1score").innerHTML = player1.score;
     }
 }
 
 /*
- * This will be the function we call to run our game of pong
+ * This will be the function we call to run our one-player game of pong
+ */
+function onePlayerGameLoop() {
+    // Step 1: Clear Our Canvas & re-draw center line
+    ctx.clearRect(0,0,canvas.width, canvas.height);
+    drawCenterLine();
+
+    // Step 2: Check for pressed keys, and update the player's accordingly
+
+    // Player 1 Controls
+    // We will Check if the key is pressed, and that we are not about to go out-of-bounds in each case
+    if (keysPressed['w'] === true && player1.y > 0) {
+        // Moving Upward
+        player1.y -= 2.5;
+    }
+
+    // have to account for the player height in this calculation
+    if (keysPressed['s'] === true && player1.y < canvas.height - player1.height) {
+        // Moving Downward
+        player1.y += 2.5;
+    }
+
+    // Player Two (Computer) Movements
+
+    /**
+     * To simulate a player, determine where this paddle is on the board
+     * relative to the postion of the puck, and move accordingly
+     */
+
+    // Case 1: Puck is below paddle and we won't hit the bottom wall
+    if (puck.y - puck.r > player2.y + player2.height && player2.y < canvas.height - player2.height) {
+        player2.y += 2;
+    }
+
+    // Case 2: Puck is above paddle and we won't hit the top wall
+    else if (puck.y + puck.r < player2.y + player2.height && player2.y > 0) {
+        player2.y -= 2;
+    }
+
+
+    // Step 3: Redraw our Player's in the new locations
+
+    drawPlayer1(player1.x, player1.y, player1.width, player1.height)
+    drawPlayer2(player2.x, player2.y, player2.width, player2.height)
+
+    // Step 4: Draw the Puck & update its location
+
+    // Check if we are colliding with the top or botton wall, and adjust accordingly
+
+    // If we bounce off the top wall, change the direction
+    // Account for the radius of the puck in this calculation
+    if (puck.y - puck.r < 0) {
+        puck.yVelocity *= -1;
+    }
+    // If we bounce off the bottom wall, change the direction
+    // Account for the radius of the puck in this calculation
+    if (puck.y > canvas.height - puck.r) {
+        puck.yVelocity *= -1;
+    }
+
+    // Check for collision with players
+    checkAndHandlePlayerCollison()
+
+    // Update puck x & y based on its velocity values before drawing
+    puck.x += puck.xVelocity;
+    puck.y += puck.yVelocity;
+
+    drawPuck(puck.x, puck.y, puck.r, puck.start, puck.end)
+
+    // Step 6: Now that we have finsihed drawing, check for a winner
+    checkForWinner();
+
+    // While neither player has won
+    // if (!player1Win && !player2Win) {
+    if (!won) {
+        //Request another animation frame
+        window.requestAnimationFrame(onePlayerGameLoop)
+    }
+    else {
+        // Otherwise, we can cancel the animation frame, and display a winner
+        // .cancelAnimationFrame(gameLoop)
+
+        // If one of the players has a score equal to 10, declare a winner
+        if (player1.score === 10) {
+            window.alert("Player 1 Wins!!")
+            window.cancelAnimationFrame(onePlayerGameLoop)
+
+            // Return to our game mode menu
+            showGameModeMenu();
+        }
+        else if (player2.score === 10) {
+            window.alert("Player 2 Wins!!")
+            window.cancelAnimationFrame(onePlayerGameLoop)
+
+            // Return to our game mode menu
+            showGameModeMenu();
+        }
+        // Otherwise, reset the board, and play again
+        else {
+            initialize();
+        }
+    }
+
+}
+
+/*
+ * This will be the function we call to run our two-player game of pong
  */
 function twoPlayerGameLoop() {
     // Step 1: Clear Our Canvas & re-draw center line
