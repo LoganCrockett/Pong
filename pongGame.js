@@ -109,6 +109,9 @@ function chooseGameMode(mode) {
         keysPressed[e.key] = false;
     })
 
+    // Move Players to start
+    movePlayersToStart();
+
     // Initialize the board, and start the game
     initialize();
 
@@ -144,11 +147,13 @@ function initialize() {
     // Start by drawing player one
     // This will draw the player either in its default position, or whatever its current position is
     // drawPlayer1(10, 10, 5, 60);
-    drawPlayer1(player1.x, player1.y, player1.width, player1.height);
+    // drawPlayer1(player1.x, player1.y, player1.width, player1.height);
+    drawPlayer1();
 
     // Now Draw player two
     // drawPlayer2(580, 10, 5, 60);
-    drawPlayer2(player2.x, player2.y, player2.width, player2.height);
+    // drawPlayer2(player2.x, player2.y, player2.width, player2.height);
+    drawPlayer2();
 
     // Draw the Center Dividing Line
     drawCenterLine();
@@ -158,7 +163,8 @@ function initialize() {
 
     // Move the puck to its starting position before drawing
     movePuckToStart();
-    drawPuck(puck.x, puck.y, puck.r, puck.start, puck.end);
+    // drawPuck(puck.x, puck.y, puck.r, puck.start, puck.end);
+    drawPuck();
 
     /**
      * Basically, when reseting the board, wait 1 second before giving the puck velocity
@@ -196,25 +202,30 @@ function initialize() {
     return;
 }
 
-function drawPlayer1(x, y, width, height) {
+// function drawPlayer1(x, y, width, height) { // Commented out
+function drawPlayer1() {
     ctx.fillStyle = "red";
     // (x, y, w, h)
-    ctx.fillRect(x,y,width,height);
+    // ctx.fillRect(x,y,width,height);
+    ctx.fillRect(player1.x, player1.y, player1.width, player1.height);
 }
 
-function drawPlayer2(x, y, width, height) {
+// function drawPlayer2(x, y, width, height) { // Commented out
+function drawPlayer2() {
     ctx.fillStyle = "blue";
     // (x, y, w, h)
-    ctx.fillRect(x,y,width,height);
+    // ctx.fillRect(x,y,width,height);
+    ctx.fillRect(player2.x, player2.y, player2.width, player2.height);
 }
 
-function drawPuck(x, y, r, start, end) {
+// function drawPuck(x, y, r, start, end) { // Commented Out
+function drawPuck() {
     ctx.fillStyle = "black";
     ctx.save();
 
     ctx.beginPath();
     // (x, y, r, start, end, anitclockwise)
-    ctx.arc(x, y, r, start, end, false);
+    ctx.arc(puck.x, puck.y, puck.r, puck.start, puck.end, false);
     ctx.fill();
 
     ctx.restore();
@@ -233,6 +244,16 @@ function drawCenterLine() {
         startingY += 40;
     }
     return;
+}
+
+/**
+ * This moves the players to their starting postion
+ * Note: It should only be called before a game starts
+ */
+function movePlayersToStart() {
+    // Update Player locations to be in the middle of the board
+    player1.y = (canvas.height - player1.height) / 2;
+    player2.y = (canvas.height - player2.height) / 2;
 }
 
 /**
@@ -460,8 +481,10 @@ function onePlayerGameLoop() {
 
     // Step 3: Redraw our Player's in the new locations
 
-    drawPlayer1(player1.x, player1.y, player1.width, player1.height)
-    drawPlayer2(player2.x, player2.y, player2.width, player2.height)
+    // drawPlayer1(player1.x, player1.y, player1.width, player1.height)
+    // drawPlayer2(player2.x, player2.y, player2.width, player2.height)
+    drawPlayer1();
+    drawPlayer2();
 
     // Step 4: Draw the Puck & update its location
 
@@ -476,7 +499,8 @@ function onePlayerGameLoop() {
     puck.x += puck.xVelocity;
     puck.y += puck.yVelocity;
 
-    drawPuck(puck.x, puck.y, puck.r, puck.start, puck.end)
+    // drawPuck(puck.x, puck.y, puck.r, puck.start, puck.end)
+    drawPuck();
 
     // Step 6: Now that we have finsihed drawing, check for a winner
     checkForWinner();
@@ -550,8 +574,10 @@ function twoPlayerGameLoop() {
 
     // Step 3: Redraw our Player's in the new locations
 
-    drawPlayer1(player1.x, player1.y, player1.width, player1.height)
-    drawPlayer2(player2.x, player2.y, player2.width, player2.height)
+    // drawPlayer1(player1.x, player1.y, player1.width, player1.height)
+    // drawPlayer2(player2.x, player2.y, player2.width, player2.height)
+    drawPlayer1();
+    drawPlayer2();
 
     // Step 4: Draw the Puck & update its location
 
@@ -566,7 +592,8 @@ function twoPlayerGameLoop() {
     puck.x += puck.xVelocity;
     puck.y += puck.yVelocity;
 
-    drawPuck(puck.x, puck.y, puck.r, puck.start, puck.end)
+    // drawPuck(puck.x, puck.y, puck.r, puck.start, puck.end)
+    drawPuck();
 
     // Step 6: Now that we have finsihed drawing, check for a winner
     checkForWinner();
