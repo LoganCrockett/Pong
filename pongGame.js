@@ -1,3 +1,9 @@
+/**
+ * Audio Clips used:
+ * 1: Energy Bounce (Used for wall bouncing): https://freesound.org/s/523088/
+ * 2: Ruler Smack (Used for player collision): https://freesound.org/s/203075/
+ */
+
 
 // These will hold the canvas, and it's context
 let canvas, ctx;
@@ -278,6 +284,10 @@ function checkAndHandlePlayerCollison() {
         && puck.y + puck.r > player1.y && puck.y - puck.r < player1.y + player1.height) {
             // If so, we have a collision, and need to change the velocity
 
+            // Play an audio sound on collision
+            const playerCollisionSound = new Audio("./Audio/ruler-smack.wav");
+            playerCollisionSound.play();
+
             // Split the paddle into three sections. This is the height for those three sections
             const player1PaddleSection = player1.height / 3;
             // Check if the puck hits in the middle section. of the paddle
@@ -320,6 +330,11 @@ function checkAndHandlePlayerCollison() {
 
     if (puck.xVelocity > 0 && puck.x + puck.r > player2.x
         && puck.y + puck.r > player2.y && puck.y - puck.r < player2.y + player2.height) {
+
+            // Play an audio sound on collision
+            const playerCollisionSound = new Audio("./Audio/ruler-smack.wav");
+            playerCollisionSound.play();
+
             // Split the paddle into three sections. This is the height for those three sections
             const player2PaddleSection = player2.height / 3;
             // Check if the puck hits in the middle section. of the paddle
@@ -375,6 +390,33 @@ function checkForWinner() {
     }
 }
 
+function checkIfPuckHitWall() {
+
+    // If we will bounce off either the top or bottom wall,
+    // play a sound, and flip the velocity
+    if (puck.y - puck.r < 0 || puck.y > canvas.height - puck.r) {
+        // Create an audio handle for the wall bounce
+        const wallBounce = new Audio("./Audio/energy-bounce.wav");
+        wallBounce.play();
+        puck.yVelocity *= -1;
+    }
+
+    /*
+    // If we bounce off the top wall, change the direction
+    // Account for the radius of the puck in this calculation
+    if (puck.y - puck.r < 0) {
+        wallBounce.play();
+        puck.yVelocity *= -1;
+    }
+    // If we bounce off the bottom wall, change the direction
+    // Account for the radius of the puck in this calculation
+    if (puck.y > canvas.height - puck.r) {
+        wallBounce.play();
+        puck.yVelocity *= -1;
+    }
+    */
+}
+
 /*
  * This will be the function we call to run our one-player game of pong
  */
@@ -425,16 +467,7 @@ function onePlayerGameLoop() {
 
     // Check if we are colliding with the top or botton wall, and adjust accordingly
 
-    // If we bounce off the top wall, change the direction
-    // Account for the radius of the puck in this calculation
-    if (puck.y - puck.r < 0) {
-        puck.yVelocity *= -1;
-    }
-    // If we bounce off the bottom wall, change the direction
-    // Account for the radius of the puck in this calculation
-    if (puck.y > canvas.height - puck.r) {
-        puck.yVelocity *= -1;
-    }
+    checkIfPuckHitWall();
 
     // Check for collision with players
     checkAndHandlePlayerCollison()
@@ -524,16 +557,7 @@ function twoPlayerGameLoop() {
 
     // Check if we are colliding with the top or botton wall, and adjust accordingly
 
-    // If we bounce off the top wall, change the direction
-    // Account for the radius of the puck in this calculation
-    if (puck.y - puck.r < 0) {
-        puck.yVelocity *= -1;
-    }
-    // If we bounce off the bottom wall, change the direction
-    // Account for the radius of the puck in this calculation
-    if (puck.y > canvas.height - puck.r) {
-        puck.yVelocity *= -1;
-    }
+    checkIfPuckHitWall();
 
     // Check for collision with players
     checkAndHandlePlayerCollison()
